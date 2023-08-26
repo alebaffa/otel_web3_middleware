@@ -2,7 +2,6 @@ from typing import Any, Callable
 
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.propagate import set_global_textmap
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
@@ -18,7 +17,6 @@ def init_tracer() -> None:
     set_global_textmap(TraceContextTextMapPropagator())
     tracer_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
     trace.set_tracer_provider(tracer_provider)
-    RequestsInstrumentor().instrument(tracer_provider=tracer_provider)
 
 
 async def otel_web3_middleware(
