@@ -92,3 +92,21 @@ def get_web3() -> AsyncWeb3:
     w3.middleware_onion.add(_async_simple_cache, name="Cache chain_id")
 ```
 Web3 middleware allows you to cache certain things, such as useless calls. In this example I am caching the calls to `eth_chainId`, which is [automatically called everytime](https://github.com/ethers-io/ethers.js/issues/901) you make a call to `eth_call`.
+
+The middleware is declared like so:
+```python
+async def otel_web3_middleware(
+    make_request: Callable[[RPCEndpoint, Any], Any], async_w3: "AsyncWeb3"
+) -> AsyncMiddlewareCoroutine:
+    async def middleware(method: RPCEndpoint, params: Any) -> Any:
+        # set the span that will be added to each Web3 call
+        tracer = trace.get_tracer(__package__)
+        # having access to all parameters passed to the Web3 calls allows to use them to add information in the span, such as the method name, but you can do whatever you like.
+        with tracer.start_as_current_span(f"web3.{method}"):
+            for i, param in enumerate(params):
+                trace.get_current_span().set_attribute(str(i), str(param))
+
+            return await make_request(method, params)
+
+    return middleware
+```
