@@ -16,6 +16,9 @@ def get_web3() -> AsyncWeb3:
         ),
         # middleware=[] <-- you can also pass custom middlewares here, but this will override the default ones. Be careful.
     )
+    
+    # Add the OpenTelemetry middleware to the middleware stack
+    w3.middleware_onion.add(otel_web3_middleware)
 
     async def _async_simple_cache(make_request, async_w3):
         middleware = await async_construct_simple_cache_middleware(
@@ -23,7 +26,8 @@ def get_web3() -> AsyncWeb3:
         )
         return await middleware(make_request, async_w3)
 
+    # Add the cache middleware to the middleware stack
+    # This avoids making the request to get the chain_id every time
     w3.middleware_onion.add(_async_simple_cache, name="Cache chain_id")
-    w3.middleware_onion.add(otel_web3_middleware)
-
+   
     return w3
