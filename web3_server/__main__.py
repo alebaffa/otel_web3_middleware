@@ -11,9 +11,10 @@ async def main():
     # Instantiate Web3
     web3 = get_web3()
 
-    with trace.get_tracer(__package__).start_as_current_span(
-        "My application",
-    ):
+    # set a parent span to include all the web3 calls
+    # this is not necessary, but it's a convenient way to group all the spans
+    # otherwise each web3 call will be a separate trace
+    with trace.get_tracer(__package__).start_as_current_span(""):
         # Perform eth_call
         await web3.eth.call(
             {
