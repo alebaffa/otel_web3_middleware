@@ -35,7 +35,12 @@ with trace.get_tracer(__package__).start_as_current_span("parent_span"):
 ```
 which is verbose, decrease readability and increases cognitive load.
 
-b. inject OpenTelemetry in the [web3 provider middleware stack](https://web3py.readthedocs.io/en/stable/middleware.html#), so that all calls will automatically be performed with a *span*, with no need to write it every time manually.
+b. inject OpenTelemetry in the [web3 provider middleware stack](https://web3py.readthedocs.io/en/stable/middleware.html#), so that all calls will automatically be performed with a *span*, with no need to write it every time manually. Like: 
+```python
+with trace.get_tracer(__package__).start_as_current_span("parent_span"):
+    web3.eth.eth_call(...)
+    web3.eth.eth_balance(...)
+```
 
 This example shows the option b.
 
