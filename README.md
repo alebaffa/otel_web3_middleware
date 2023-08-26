@@ -18,6 +18,28 @@ You should see the traces like
 
 ## Walkthrough
 
+### Introduction
+
+There are two ways to track external calls with OpenTelemetry:
+
+
+a. wrap each and every call with a dedicated OpenTelemetry span. So, doing something like this:
+
+```python
+with trace.get_tracer(__package__).start_as_current_span("parent_span"):
+    with trace.get_tracer(__package__).start_as_current_span("child span"):
+        web3.eth.eth_call(...)
+
+    with trace.get_tracer(__package__).start_as_current_span("child span"):
+        web3.eth.eth_balance(...)
+```
+which is verbose, decrease readability and increases cognitive load.
+
+b. inject OpenTelemetry in the [web3 provider middleware stack](https://web3py.readthedocs.io/en/stable/middleware.html#), so that all calls will automatically be performed with a *span*, with no need to write it every time manually.
+
+This example shows the option b.
+
+
 ### 1.  Initialize OpenTelemetry
 
 The inizialization is done in the [middleware/otel.py](middleware/otel.py) and called from [web3_server/main.py](web3_server/__main__.py)
