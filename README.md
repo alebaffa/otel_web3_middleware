@@ -12,7 +12,7 @@ This is a working example of how to track Web3 calls with Opentelemetry.
 
 ### Open Jaeger
 
-Open your browser to `[http://localhost:16686](http://localhost:16686/)` to see the traces in Jaeger.
+Open your browser to `http://localhost:16686` to see the traces in Jaeger.
 You should see the traces like
 ![](otel-test.png)
 
